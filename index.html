@@ -6,7 +6,7 @@
 
 <title>The OG Games</title>
 
-<!-- 🔥 TAB ICON -->
+<!-- ICON -->
 <link rel="icon" type="image/png" href="icon.png">
 
 <style>
@@ -17,18 +17,23 @@ body {
     color: white;
 }
 
+/* 🔥 CANVAS BACKGROUND */
+#bgCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
+
 /* HEADER */
 header {
-    background: linear-gradient(90deg, #111, #1a1a1a);
-    padding: 25px;
+    background: #111;
+    padding: 20px;
     text-align: center;
-    box-shadow: 0 0 20px red;
 }
 
 h1 {
     color: red;
-    font-size: 40px;
-    text-shadow: 0 0 10px red;
 }
 
 /* CONTAINER */
@@ -44,16 +49,9 @@ h1 {
     background: #1a1a1a;
     margin: 15px;
     padding: 15px;
-    border-radius: 12px;
+    border-radius: 10px;
     width: 300px;
     text-align: center;
-    transition: 0.3s;
-    box-shadow: 0 0 10px #000;
-}
-
-.game-card:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 20px red;
 }
 
 .game-card img {
@@ -64,38 +62,82 @@ h1 {
 /* BUTTON */
 button {
     margin-top: 10px;
-    padding: 12px;
-    background: linear-gradient(45deg, red, hotpink);
+    padding: 10px;
+    background: red;
     border: none;
     color: white;
     cursor: pointer;
-    border-radius: 8px;
-    font-weight: bold;
-    transition: 0.3s;
-}
-
-button:hover {
-    background: linear-gradient(45deg, hotpink, red);
-    box-shadow: 0 0 15px hotpink;
 }
 </style>
 </head>
 
 <body>
 
+<!-- 🔥 ANIMATED BACKGROUND -->
+<canvas id="bgCanvas"></canvas>
+
 <header>
     <h1>The OG Games</h1>
-    <p>Download The Thrill 🎮🔥</p>
+    <p>Download The Thrill 🎮</p>
 </header>
 
 <div class="container" id="games"></div>
 
 <script>
+/* ================= BACKGROUND ANIMATION ================= */
+const canvas = document.getElementById("bgCanvas");
+const ctx = canvas.getContext("2d");
+
+let particles = [];
+
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
+
+// particles
+for (let i = 0; i < 80; i++) {
+    particles.push({
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * window.innerHeight,
+        size: Math.random() * 3,
+        speedX: (Math.random() - 0.5),
+        speedY: (Math.random() - 0.5)
+    });
+}
+
+function animateBG() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    particles.forEach(p => {
+        p.x += p.speedX;
+        p.y += p.speedY;
+
+        if (p.x > canvas.width) p.x = 0;
+        if (p.x < 0) p.x = canvas.width;
+        if (p.y > canvas.height) p.y = 0;
+        if (p.y < 0) p.y = canvas.height;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(255,0,100,0.7)";
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = "hotpink";
+        ctx.fill();
+    });
+
+    requestAnimationFrame(animateBG);
+}
+animateBG();
+
+/* ================= GAME LIST ================= */
 const games = [
     {
         name: "MR.FUNKY MAMBA",
         desc: "Neon RGB snake game with glowing effects",
-        img: "icon.png",   // 🔥 your icon here
+        img: "icon.png",
         link: "https://og13ayaan.itch.io/mr-funky-mamba"
     },
     {
@@ -114,9 +156,7 @@ games.forEach(game => {
             <img src="${game.img}">
             <h2>${game.name}</h2>
             <p>${game.desc}</p>
-            <button onclick="download('${game.link}')">
-                Download The Thrill 🔥
-            </button>
+            <button onclick="download('${game.link}')">Download</button>
         </div>
     `;
 });
